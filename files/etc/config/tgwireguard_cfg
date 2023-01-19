@@ -1,0 +1,9 @@
+
+config wgconfig 'settings'
+	option TGWG_LISTENPORT ''
+	option TGWG_ENDPORT ''
+	option TGWG_ADDR '0.0.0.0'
+	option TGWG_ENDHOST '0.0.0.0'
+	option TGWG_PRIVKEY ''
+	option TGWG_PUBKEY ''
+
