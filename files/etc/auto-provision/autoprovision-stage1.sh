@@ -4,6 +4,51 @@
 
 . /etc/auto-provision/autoprovision-functions.sh
 
+# Log to the system log and echo if needed
+log_say()
+{
+    SCRIPT_NAME=$(basename "$0")
+    echo "${SCRIPT_NAME}: ${1}"
+    logger "${SCRIPT_NAME}: ${1}"
+}
+
+checkValidPendrive()
+{
+    local DEVICE="/dev/sda" # The drive we check
+    local RESULT="false" # The default result until proven otherwise
+
+    # Check if the device exists
+    if [ -b "$DEVICE" ]; then
+        # Get the number of partitions
+        local PARTITIONS=$(fdisk -l "$DEVICE" | grep "$DEVICE" | wc -l)
+
+        if [ "$PARTITIONS" -eq 1 ]; then
+            log "Device $DEVICE is uninitialized (no partitions) so we will erase and partition it."
+            RESULT="true"
+        elif [ "$PARTITIONS" -eq 2 ]; then
+            # Get the label of the single partition
+            PARTITION_LABEL=$(blkid -s LABEL -o value "$DEVICE"1)
+
+            if [ "$PARTITION_LABEL" = "SETUP" ]; then
+                log "The single partition on $DEVICE has the label 'SETUP' so we will erase and partition it."
+                RESULT="true"
+                # This is a success
+            else
+                log "The single partition on $DEVICE does not have the label 'SETUP' so we will not erase it."
+                # This is a failure
+            fi
+        else
+            log "Device $DEVICE has $PARTITIONS partitions so we will not erase it."
+            # This is a failure
+        fi
+    else
+        log "Device $DEVICE does not exist."
+        # This is a failure
+    fi
+
+    echo "$RESULT"
+}
+
 getPendriveSize()
 {
     # this is needed for the mmc card in some (all?) Huawei 3G dongle.
@@ -24,7 +69,7 @@ hasBigEnoughPendrive()
 {
     local size=$(getPendriveSize)
     if [ $size -ge 600000 ]; then
-        log "Found a pendrive of size: $(($size / 2 / 1024)) MB"
+        log_say "Found a pendrive of size: $(($size / 2 / 1024)) MB"
         return 0
     else
         return 1
@@ -62,7 +107,7 @@ t
 w
 q
 EOF
-    log "Finished partitioning /dev/sda using fdisk"
+    log_say "Finished partitioning /dev/sda using fdisk"
 
     sleep 2
 
@@ -76,7 +121,7 @@ EOF
     mkfs.ext4 -F -L root -U $rootUUID /dev/sda2
     mkfs.ext4 -F -L data -U $dataUUID /dev/sda3
 
-    log "Finished setting up filesystems"
+    log_say "Finished setting up filesystems"
 }
 
 setupExtroot()
@@ -105,34 +150,53 @@ EOF
 #    ln -s /tmp state
 #    cd -
 
-    log "Finished setting up extroot"
+    log_say "Finished setting up extroot"
 }
 
 autoprovisionStage1()
 {
-    signalAutoprovisionWorking
+    log_say "Checking if this is a valid pendrive"
+    if [ "$(checkValidPendrive)" = "true" ]; then
+        log_say "This is a valid pendrive"
 
-    signalAutoprovisionWaitingForUser
-    signalWaitingForPendrive
+        signalAutoprovisionWorking
 
-    until hasBigEnoughPendrive
-    do
-        echo "Waiting for a pendrive to be inserted"
-        sleep 3
-    done
+        signalAutoprovisionWaitingForUser
+        signalWaitingForPendrive
 
-    signalAutoprovisionWorking # to make it flash in sync with the USB led
-    signalFormatting
+        until hasBigEnoughPendrive
+        do
+            log_say "Waiting for a pendrive to be inserted"
+            sleep 3
+        done
 
-    sleep 1
+        signalAutoprovisionWorking # to make it flash in sync with the USB led
+        signalFormatting
 
-    setupPendrivePartitions
-    sleep 1
-    setupExtroot
+        sleep 1
 
-    sync
-    stopSignallingAnything
-    reboot
+        setupPendrivePartitions
+        sleep 1
+        setupExtroot
+
+        sync
+        stopSignallingAnything
+        reboot
+    else # if pendrive invalid, wait 30s then reboot
+        log_say "This is not a valid pendrive"
+        log_say "Please insert a USB drive with a single partition with the label 'SETUP' or no partitions at all (uninitialized)."
+        log_say "Sleeping for 30s and then rebooting."
+        # pull our variable in from .profile
+        . /root/.profile
+        # Check if $REPO = main, if so reboot
+        if [ "$REPO" = "main" ]; then
+            sleep 30
+            log_say "REPO is set to main, rebooting"
+            reboot
+        else
+            log_say "REPO is set to ${REPO}, not rebooting"
+        fi
+    fi # end valid pendrive check
 }
 
 autoprovisionStage1
