@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OUTPUT="$(pwd)/images"
-BUILD_VERSION="22.03.5"
+BUILD_VERSION="21.02.3"
 BOARD_NAME="bcm53xx"
 BOARD_SUBNAME="generic"
 BUILDER="https://downloads.openwrt.org/releases/${BUILD_VERSION}/targets/${BOARD_NAME}/${BOARD_SUBNAME}/openwrt-imagebuilder-${BUILD_VERSION}-${BOARD_NAME}-${BOARD_SUBNAME}.Linux-x86_64.tar.xz"
