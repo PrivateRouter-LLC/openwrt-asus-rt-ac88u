@@ -83,17 +83,13 @@ installPackages()
         sleep 15
     done
 
-    opkg update
-   #install mesh support
-   opkg remove wpad
-   opkg remove wpad wpad-basic
-   opkg remove wpad-basic-openssl
-   opkg remove wpad-basic-wolfssl
-   opkg remove wpad-wolfssl
-   opkg install wpad-mesh-openssl
-   opkg install kmod-batman-adv
-   opkg install batctl
-   opkg install avahi-autoipd
+    ## INSTALL MESH  ##
+    log_say "Installing Mesh Packages..."
+    opkg install tgrouterappstore luci-app-shortcutmenu luci-app-poweroff luci-app-wizard
+    opkg remove wpad wpad-basic wpad-basic-openssl wpad-basic-wolfssl wpad-wolfssl
+    opkg install wpad-mesh-openssl kmod-batman-adv batctl avahi-autoipd batctl-full luci-app-dawn
+    opkg install /etc/luci-app-easymesh_2.2_all.ipk
+    opkg install /etc/luci-proto-batman-adv_git-22.104.47289-0a762fd_all.ipk
     
     # List of our packages to install
     local PACKAGE_LIST="acme attr avahi-dbus-daemon base-files busybox ca-bundle certtool cgi-io curl davfs2 dbus ddns-scripts-services dnsmasq dropbear firewall fstools fuse3-utils fwtool getrandom git git-http jq bash glib2 gnupg hostapd-common ip-full ip6tables ipset iptables iptables-mod-ipopt iw iwinfo jshn jsonfilter kernel kmod-bluetooth kmod-btmrvl kmod-cfg80211 kmod-crypto-aead kmod-crypto-ccm kmod-crypto-cmac kmod-crypto-ctr kmod-crypto-ecb kmod-crypto-ecdh kmod-crypto-gcm kmod-crypto-gf128 kmod-crypto-ghash kmod-crypto-hash kmod-crypto-hmac kmod-crypto-kpp kmod-crypto-lib-blake2s kmod-crypto-lib-chacha20 kmod-crypto-lib-chacha20poly1305 kmod-crypto-lib-curve25519 kmod-crypto-lib-poly1305 kmod-crypto-manager kmod-crypto-null kmod-crypto-rng kmod-crypto-seqiv kmod-crypto-sha256 kmod-fuse kmod-gpio-button-hotplug kmod-hid kmod-input-core kmod-input-evdev kmod-ip6tables kmod-ipt-conntrack kmod-ipt-core kmod-ipt-ipopt kmod-ipt-ipset kmod-ipt-nat kmod-ipt-offload kmod-lib-crc-ccitt kmod-lib-crc16 kmod-mac80211 kmod-mmc kmod-mwifiex-sdio luci-compat luci-lib-ipkg kmod-mwlwifi kmod-nf-conntrack kmod-nf-conntrack6 kmod-nf-flow kmod-nf-ipt kmod-nf-ipt6 kmod-nf-nat kmod-nf-reject kmod-nf-reject6 kmod-nfnetlink kmod-nls-base kmod-ppp kmod-pppoe kmod-pppox kmod-regmap-core kmod-slhc kmod-tun kmod-udptunnel4 kmod-udptunnel6 kmod-usb-core kmod-wireguard libatomic1 libattr libavahi-client libavahi-dbus-support libblkid1 libbpf0 libbz2-1.0 libc libcap libcurl4 libdaemon libdbus libelf1 libev libevdev libevent2-7 libexif libexpat libffi libffmpeg-mini libflac libfuse1 libfuse3-3 libgcc1 libgmp10 libgnutls libhttp-parser libid3tag libip4tc2 libip6tc2 libipset13 libiwinfo-data libiwinfo-lua libiwinfo20210430 libjpeg-turbo libjson-c5 liblua5.1.5 liblucihttp-lua liblucihttp0 liblzo2 libmbedtls12 libmnl0 libmount1 libncurses6 libneon libnettle8 libnftnl11 libnghttp2-14 libnl-tiny1 libogg0 libopenssl-conf libopenssl1.1 libowipcalc libpam libpcre libpopt0 libprotobuf-c libpthread libreadline8 librt libsmartcols1 libsodium libsqlite3-0 libtasn1 libtirpc libubus-lua libuci-lua libuci20130104 libuclient20201210 libudev-zero liburing libusb-1.0-0 libustream-wolfssl20201210 libuuid1 libvorbis libxml2 libxtables12 logd lua luci luci-app-ddns luci-app-firewall luci-app-minidlna luci-app-openvpn luci-app-opkg luci-app-samba4 luci-app-statistics luci-mod-dashboard luci-app-vnstat luci-app-shadowsocks-libev luci-app-smartdns luci-app-vpn-policy-routing luci-app-vpnbypass luci-app-watchcat luci-app-wireguard luci-base luci-i18n-firewall-en luci-i18n-wireguard-en luci-lib-base luci-lib-ip luci-lib-jsonc luci-lib-nixio luci-mod-admin-full luci-mod-network luci-mod-status luci-mod-system luci-proto-ipv6 luci-proto-ppp luci-proto-wireguard luci-theme-bootstrap luci-theme-material luci-theme-openwrt-2020 minidlna mount-utils mtd mwifiex-sdio-firmware mwlwifi-firmware-88w8964 netifd ocserv odhcp6c odhcpd-ipv6only openssh-sftp-client openssh-sftp-server openssl-util openvpn-openssl openwrt-keyring opkg owipcalc ppp ppp-mod-pppoe procd procd-seccomp procd-ujail python3-base python3-email python3-light python3-logging python3-openssl python3-pysocks python3-urllib resolveip rpcd rpcd-mod-file rpcd-mod-iwinfo rpcd-mod-luci rpcd-mod-rpcsys rpcd-mod-rrdns rsync samba4-libs samba4-server shadowsocks-libev-config shadowsocks-libev-ss-tunnel smartdns socat socksify sshfs terminfo tor ubi-utils uboot-envtools ubox ubus ubusd uci uclient-fetch uhttpd uhttpd-mod-ubus urandom-seed urngd usbutils usign vpn-policy-routing vpnbypass vpnc-scripts watchcat wg-installer-client wget-ssl wireguard-tools wireless-regdb wpad-basic-wolfssl zlib kmod-usb-storage block-mount kmod-fs-ext4 kmod-fs-exfat e2fsprogs fdisk"
