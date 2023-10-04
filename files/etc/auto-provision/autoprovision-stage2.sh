@@ -86,9 +86,9 @@ installPackages()
     ## INSTALL MESH  ##
     log_say "Installing Mesh Packages..."
     opkg install tgrouterappstore luci-app-shortcutmenu luci-app-poweroff luci-app-wizard
-    opkg remove wpad wpad-basic wpad-basic-openssl wpad-basic-wolfssl wpad-wolfssl
+    opkg remove wpad wpad-basic wpad-basic-openssl wpad-basic-wolfssl wpad-wolfssl wpad-mbedtls wpad-basic-mbedtls
     opkg install wpad-mesh-openssl kmod-batman-adv batctl avahi-autoipd batctl-full luci-app-dawn
-    opkg install /etc/luci-app-easymesh_2.2_all.ipk
+    opkg install /etc/luci-app-easymesh_2.4_all.ipk
     opkg install /etc/luci-proto-batman-adv_git-22.104.47289-0a762fd_all.ipk
     
     # List of our packages to install
